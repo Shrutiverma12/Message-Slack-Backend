@@ -3,7 +3,7 @@ import crudRepository from './crudReository.js';
 
 const userRepository = {
   ...crudRepository(User),
-  getByEmail: async function ({ email }) {
+  getByEmail: async function (email) {
     const user = await User.findOne({ email });
     return user;
   },
