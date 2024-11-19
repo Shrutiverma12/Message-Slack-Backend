@@ -14,7 +14,6 @@ export const isAuthenticated = async (req, res, next) => {
     if (!token) {
       return res.status(StatusCodes.FORBIDDEN).json(
         customErrorResponse({
-          explanation: 'Invalid data sent from the client',
           message: 'No auth token provided'
         })
       );
