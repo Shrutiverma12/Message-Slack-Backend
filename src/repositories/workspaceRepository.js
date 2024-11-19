@@ -1,9 +1,10 @@
-import crudRepository from './crudReository.js';
+import { StatusCodes } from 'http-status-codes';
+
+import User from '../schema/user.js';
 import Wokspace from '../schema/workspace.js';
 import ClientError from '../utils/errors/clientError.js';
-import { StatusCodes } from 'http-status-codes';
-import User from '../schema/user.js';
 import channelRepository from './channelRepository.js';
+import crudRepository from './crudReository.js';
 
 const workspaceRepository = {
   ...crudRepository(Wokspace),
@@ -87,7 +88,7 @@ const workspaceRepository = {
       });
     }
 
-    const isChannelAlredayPartOfWorkspace = workspace.channels.push.find(
+    const isChannelAlredayPartOfWorkspace = workspace.channels.find(
       (channel) => channel.name === channelName
     );
     if (isChannelAlredayPartOfWorkspace) {
