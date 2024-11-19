@@ -6,6 +6,18 @@ import workspaceRepository from '../repositories/workspaceRepository.js';
 import ClientError from '../utils/errors/clientError.js';
 import ValidationError from '../utils/errors/validationError.js';
 
+const isUserAdminOfWorkspace = (workspace, userId) => {
+  return workspace.members.find(
+    (member) => member.memberId.toString() === userId && member.role === 'admin'
+  );
+};
+
+const isUserMemberOfWorkspace = (workspace, userId) => {
+  return workspace.members.find(
+    (member) => member.memberId.toString() === userId
+  );
+};
+
 export const createWorkspaceService = async (workspaceData) => {
   try {
     const joinCode = uuidv4().substring(0, 6).toUpperCase();
@@ -69,11 +81,7 @@ export const deleteWorkspaceService = async (workspaceId, userId) => {
       });
     }
 
-    const isAllowed = workspace.members.find(
-      (member) =>
-        member.memberId.toString() === userId && member.role === 'admin'
-    );
-
+    const isAllowed = isUserAdminOfWorkspace(workspace, userId);
     // const channelIds = workspace.channels.map((channel) => channel._id)
     if (isAllowed) {
       await channelRepository.deleteMany(workspace.channels);
@@ -90,3 +98,48 @@ export const deleteWorkspaceService = async (workspaceId, userId) => {
     throw error;
   }
 };
+
+export const getWorkspaceService = async (workspaceId, userId) => {
+  try {
+    const workspace = await workspaceRepository.getById(workspaceId);
+    if (!workspace) {
+      throw new ClientError({
+        explanation: 'Invalid data sent from the client',
+        message: 'Workspace not found',
+        statusCode: StatusCodes.NOT_FOUND
+      });
+    }
+
+    const isMember = isUserMemberOfWorkspace(workspace, userId);
+    if (!isMember) {
+      throw new ClientError({
+        explanation: 'User is not a member of the worksapce',
+        message: 'User is not a member of the worksapce',
+        statusCode: StatusCodes.UNAUTHORIZED
+      });
+    }
+    return workspace;
+  } catch (error) {
+    console.log('Get Workspace service', error);
+    throw error;
+  }
+};
+
+export const getWorkspaceByJoinCodeService = async (joinCode) => {};
+
+export const updateWorkspaceService = async (
+  workspaceId,
+  workspaceData,
+  userId
+) => {};
+
+export const addMemberToWorkspaceService = async (
+  workspaceId,
+  memberId,
+  role
+) => {};
+
+export const addChannelToWorkspaceService = async (
+  workspaceId,
+  channelName
+) => {};
