@@ -1,16 +1,23 @@
 import { StatusCodes } from 'http-status-codes';
 
 import User from '../schema/user.js';
-import Wokspace from '../schema/workspace.js';
+import Workspace from '../schema/workspace.js';
 import ClientError from '../utils/errors/clientError.js';
 import channelRepository from './channelRepository.js';
 import crudRepository from './crudReository.js';
 
 const workspaceRepository = {
-  ...crudRepository(Wokspace),
+  ...crudRepository(Workspace),
+
+  getWorkspaceDetailsById: async function (worksapceId) {
+    const workspace = await Workspace.findById(worksapceId)
+      .populate('members.memberId', 'username email avatar')
+      .populate('channels');
+    return workspace;
+  },
 
   getWorkspaceByName: async function (workspaceName) {
-    const workspace = await Wokspace.findOne({
+    const workspace = await Workspace.findOne({
       name: workspaceName
     });
     if (!workspace) {
@@ -24,9 +31,10 @@ const workspaceRepository = {
   },
 
   getWorkspaceByJoinCode: async function (joinCode) {
-    const workspace = await Wokspace.findOne({
+    const workspace = await Workspace.findOne({
       joinCode
     });
+
     if (!workspace) {
       throw new ClientError({
         explanation: 'Invalid data sent from the client',
@@ -38,7 +46,7 @@ const workspaceRepository = {
   },
 
   addMemberToWorkspace: async function (workspaceId, memberId, role) {
-    const workspace = await Wokspace.findById(workspaceId);
+    const workspace = await Workspace.findById(workspaceId);
     if (!workspace) {
       throw new ClientError({
         explanation: 'Invalid data sent from the client',
@@ -79,7 +87,8 @@ const workspaceRepository = {
   },
 
   addChannelToWorkspace: async function (workspaceId, channelName) {
-    const workspace = await Wokspace.findById(workspaceId).populate('channels');
+    const workspace =
+      await Workspace.findById(workspaceId).populate('channels');
     if (!workspace) {
       throw new ClientError({
         explanation: 'Invalid data sent from the client',
@@ -91,6 +100,7 @@ const workspaceRepository = {
     const isChannelAlredayPartOfWorkspace = workspace.channels.find(
       (channel) => channel.name === channelName
     );
+
     if (isChannelAlredayPartOfWorkspace) {
       throw new ClientError({
         explanation: 'Invalid data sent from the client',
@@ -99,14 +109,17 @@ const workspaceRepository = {
       });
     }
 
-    const channel = await channelRepository.create({ name: channelName });
+    const channel = await channelRepository.create({
+      name: channelName,
+      workspaceId: workspaceId
+    });
     workspace.channels.push(channel);
     await workspace.save();
     return workspace;
   },
 
   fetchAllWorkspaceByMemberId: async function (memberId) {
-    const workspaces = await Wokspace.find({
+    const workspaces = await Workspace.find({
       'members.memberId': memberId
     }).populate('members.memberId', 'username email avatar');
     return workspaces;
