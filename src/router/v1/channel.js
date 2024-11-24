@@ -1,4 +1,5 @@
 import express from 'express';
+
 import { getChannelByIdController } from '../../controller/channelController.js';
 import { isAuthenticated } from '../../middleware/authMiddleware.js';
 

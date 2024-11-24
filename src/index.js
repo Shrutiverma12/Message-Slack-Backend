@@ -5,6 +5,8 @@ import connectDB from './config/dbConfig.js';
 import { PORT } from './config/serverConfig.js';
 import apiRouter from './router/apiRoutes.js';
 
+import './producers/mailQueueProducer.js';
+
 const app = express();
 
 app.use(express.json());
