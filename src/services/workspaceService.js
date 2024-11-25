@@ -1,13 +1,13 @@
 import { StatusCodes } from 'http-status-codes';
 import { v4 as uuidv4 } from 'uuid';
 
+import { addEmailToMailQueue } from '../producers/mailQueueProducer.js';
 import channelRepository from '../repositories/channelRepository.js';
 import userRepository from '../repositories/userRepository.js';
 import workspaceRepository from '../repositories/workspaceRepository.js';
+import { workspaceJoinMail } from '../utils/common/mailObject.js';
 import ClientError from '../utils/errors/clientError.js';
 import ValidationError from '../utils/errors/validationError.js';
-import { addEmailToMailQueue } from '../producers/mailQueueProducer.js';
-import { workspaceJoinMail } from '../utils/common/mailObject.js';
 
 const isUserAdminOfWorkspace = (workspace, userId) => {
   const response = workspace.members.find(
