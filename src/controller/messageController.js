@@ -1,21 +1,25 @@
 import { StatusCodes } from 'http-status-codes';
 
-import { isMemberPartOfWorkspaceService } from '../services/memberService.js';
+import { getMessagesService } from '../services/messagesService.js';
 import {
   customErrorResponse,
   internalErrorResponse,
   successResponse
 } from '../utils/common/responseObjects.js';
 
-export const isMemberPartOfWorkspaceController = async (req, res) => {
+export const getMessages = async (req, res) => {
   try {
-    const response = await isMemberPartOfWorkspaceService(
-      req.params.workspaceId,
+    const response = await getMessagesService(
+      {
+        channelId: req.params.channelId
+      },
+      req.query.page || 1,
+      req.query.limit || 20,
       req.user
     );
-    return req
+    return res
       .status(StatusCodes.OK)
-      .json(successResponse(response, 'User is a member of workspace'));
+      .json(successResponse(response, 'Messages fetched successfully'));
   } catch (error) {
     console.log('User Controller error', error);
     if (error.statusCode) {
