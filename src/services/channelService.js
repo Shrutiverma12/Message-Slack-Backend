@@ -32,7 +32,7 @@ export const getChannelByIdService = async (channelId, userId) => {
       });
     }
 
-    const messages = messageRepository.getPaginatedMessages(
+    const messages = await messageRepository.getPaginatedMessages(
       {
         channelId
       },
@@ -40,7 +40,14 @@ export const getChannelByIdService = async (channelId, userId) => {
       20
     );
 
-    return { messages, _id: channel.id, name: channel.name };
+    return {
+      messages,
+      _id: channel._id,
+      name: channel.name,
+      createdAt: channel.createdAt,
+      updatedAt: channel.updatedAt,
+      workspaceId: channel.workspaceId
+    };
   } catch (error) {
     console.log('Get Channel service', error);
     throw error;
