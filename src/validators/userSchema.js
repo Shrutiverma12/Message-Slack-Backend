@@ -10,3 +10,11 @@ export const userSignInSchema = z.object({
   email: z.string().email(),
   password: z.string()
 });
+
+export const forgetPasswordSchema = z.object({
+  email: z.string().email()
+});
+
+export const reaetPasswordSchema = z.object({
+  password: z.string()
+});
