@@ -254,8 +254,8 @@ export const addMemberToWorkspaceService = async (
     const isMember = isUserMemberOfWorkspace(workspace, memberId);
     if (isMember) {
       throw new ClientError({
-        explanation: 'User is already a member workspace',
-        message: 'User is  already a member workspace',
+        explanation: 'User is already a member of the workspace',
+        message: 'User is  already a member of the workspace',
         statusCode: StatusCodes.UNAUTHORIZED
       });
     }
@@ -323,6 +323,37 @@ export const addChannelToWorkspaceService = async (
     return response;
   } catch (error) {
     console.log('Add channel to Workspace service', error);
+    throw error;
+  }
+};
+
+export const joinWorkspaceService = async (workspaceId, joinCode, userId) => {
+  try {
+    const workspace =
+      await workspaceRepository.getWorkspaceDetailsById(workspaceId);
+    if (!workspace) {
+      throw new ClientError({
+        explanation: 'Invalid data sent from the client',
+        message: 'Workspace not found',
+        statusCode: StatusCodes.NOT_FOUND
+      });
+    }
+    if (workspace.joinCode !== joinCode) {
+      throw new ClientError({
+        explanation: 'Invalid data sent from the client',
+        message: 'Workspace not found',
+        statusCode: StatusCodes.NOT_FOUND
+      });
+    }
+
+    const updatedWorkspace = await workspaceRepository.addMemberToWorkspace(
+      workspaceId,
+      userId,
+      'member'
+    );
+    return updatedWorkspace;
+  } catch (error) {
+    console.log('Join workspace service error', error);
     throw error;
   }
 };
