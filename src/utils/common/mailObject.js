@@ -1,4 +1,4 @@
-import { MAIL_ID } from '../../config/serverConfig.js';
+import { APP_LINK, MAIL_ID } from '../../config/serverConfig.js';
 
 export const workspaceJoinMail = function (workspace) {
   return {
@@ -17,5 +17,16 @@ export const forgetPasswordMail = function (token) {
     <a href="http://localhost:5173/auth/reset-password/${token}">http://localhost:5173/auth/reset-password/${token}</a>
     <p>The link will expire in 10 minutes.</p>
     <p>If you didn't request a password reset, please ignore this email.</p>`
+  };
+};
+
+export const verifyEmailMail = function (verificationToken) {
+  return {
+    from: MAIL_ID,
+    subject: 'Welcome to the app . Please verify your email',
+    text: `
+     Welcome to the app. Please verify your email by clicking on the link below:
+     ${APP_LINK}/verify/${verificationToken}
+    `
   };
 };

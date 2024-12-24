@@ -9,6 +9,7 @@ import connectDB from './config/dbConfig.js';
 import { PORT } from './config/serverConfig.js';
 import channelSocketHandlers from './controller/channelSocketController.js';
 import messageSocketHandlers from './controller/messageSocketController.js';
+import { verifyEmailController } from './controller/workspaceController.js';
 import apiRouter from './router/apiRoutes.js';
 
 const app = express();
@@ -29,6 +30,8 @@ app.get('/ping', (req, res) => {
     message: 'pong'
   });
 });
+
+app.get(`/verify/:token`, verifyEmailController);
 
 io.on('connection', (socket) => {
   //   console.log(`a user is connected`, socket.id);
