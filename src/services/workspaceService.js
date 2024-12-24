@@ -21,7 +21,7 @@ const isUserAdminOfWorkspace = (workspace, userId) => {
 
 export const isUserMemberOfWorkspace = (workspace, userId) => {
   return workspace.members.find(
-    (member) => member.memberId.toString() === userId
+    (member) => member.memberId._id.toString() === userId
   );
 };
 
@@ -114,7 +114,8 @@ export const deleteWorkspaceService = async (workspaceId, userId) => {
 
 export const getWorkspaceService = async (workspaceId, userId) => {
   try {
-    const workspace = await workspaceRepository.getById(workspaceId);
+    const workspace =
+      await workspaceRepository.getWorkspaceDetailsById(workspaceId);
     if (!workspace) {
       throw new ClientError({
         explanation: 'Invalid data sent from the client',
@@ -158,6 +159,24 @@ export const getWorkspaceByJoinCodeService = async (joinCode, userId) => {
       });
     }
     return workspace;
+  } catch (error) {
+    console.log('Get Workspace service', error);
+    throw error;
+  }
+};
+
+export const resetWorkspaceJoinCodeService = async (workspaceId, userId) => {
+  try {
+    const newJoinCode = uuidv4().substring(0, 6).toUpperCase();
+    const updatedWorkspace = await updateWorkspaceService(
+      workspaceId,
+      {
+        joinCode: newJoinCode
+      },
+      userId
+    );
+
+    return updatedWorkspace;
   } catch (error) {
     console.log('Get Workspace service', error);
     throw error;
