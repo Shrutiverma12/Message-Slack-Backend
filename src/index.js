@@ -15,7 +15,15 @@ import apiRouter from './router/apiRoutes.js';
 const app = express();
 
 const server = createServer(app);
-const io = new Server(server);
+const io = new Server(
+  server,
+  (server,
+  {
+    cors: {
+      origin: '*'
+    }
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -34,7 +42,7 @@ app.get('/ping', (req, res) => {
 app.get(`/verify/:token`, verifyEmailController);
 
 io.on('connection', (socket) => {
-  //   console.log(`a user is connected`, socket.id);
+  console.log(`a user is connected`, socket.id);
 
   //   // setInterval(() => {
   //   //   socket.emit('message', 'This is a message from the server');
