@@ -6,7 +6,7 @@ export default function messageHandlers(io, socket) {
     socket.join(roomId);
     console.log(`User ${socket.id} Joined the channel: ${roomId}`);
 
-    cb({
+    cb?.({
       success: true,
       message: 'Successfully joined the channel',
       data: roomId
